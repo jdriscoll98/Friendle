@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { useState, useRef } from "react";
 import Keyboard from "react-simple-keyboard";
+import SimpleCrypto from "simple-crypto-js";
 import "react-simple-keyboard/build/css/index.css";
 
 import "./App.css";
@@ -12,24 +13,36 @@ function App() {
   const [currentGuess, setCurrentGuess] = useState("");
   const [gameOver, setGameOver] = useState(false);
 
+  const [secret] = useState("is-a-secret"); // not a really a secret but whatever
+
   function newWordIsValid() {
     return newWordValue?.length === 5;
   }
 
+  function encryptWord(word) {
+    const simpleCrypto = new SimpleCrypto(secret);
+    return simpleCrypto.encrypt(word);
+  }
   function createNewGame() {
-    // create a unique id for the new game
-    const newGameId = Math.random().toString(36).substring(2, 15);
-    // set local storage to store the new game id and the word to simulate DB storage
-    localStorage.setItem(newGameId, newWordValue);
-    // redirect to the new game
-    window.location.href = `/game/${newGameId}`;
+    // encrypt the word
+    const encryptedWord = encryptWord(newWordValue);
+    // replace '/' with '_'
+    const encryptedWordWithDashes = encryptedWord.replace(/\//g, "_");
+    // navigate to the game page
+    window.location.href = `/game/${encryptedWordWithDashes}`;
   }
 
   function getAnswer() {
+    const simpleCrypto = new SimpleCrypto(secret);
     // get game id from url
     const gameId = window.location.pathname.split("/")[2];
-    // get word from local storage
-    return localStorage.getItem(gameId);
+    if (!gameId) {
+      return;
+    }
+    // replace '_' with '/'
+    const encryptedWord = gameId.replace(/_/g, "/");
+    // decrypt the word
+    return simpleCrypto.decrypt(encryptedWord);
   }
 
   function onKeyPress(button) {
@@ -62,6 +75,10 @@ function App() {
   }
 
   function getGameBoard() {
+    // if route is not /game/:id, return
+    if (!window.location.pathname.includes("/game/")) {
+      return;
+    }
     const board = [];
     const currentGuessRow = guesses.length;
     // for each row
@@ -93,8 +110,6 @@ function App() {
     }
 
     const word = getAnswer();
-
-    console.log(word, guess);
 
     if (word[letterIndex] === guess[letterIndex]) {
       return "green";
