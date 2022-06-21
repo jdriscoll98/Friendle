@@ -8,6 +8,8 @@ import "./App.css";
 function App() {
   const [newWordValue, setNewWordValue] = useState("");
   const keyboard = useRef();
+  const [guesses, setGuesses] = useState([]);
+  const [currentGuess, setCurrentGuess] = useState("");
 
   function newWordIsValid() {
     return newWordValue?.length === 5;
@@ -23,7 +25,51 @@ function App() {
   }
 
   function onKeyPress(button) {
-    console.log("Button pressed", button);
+    // get the most recent guess
+    // if key is backspace
+    if (button === "{bksp}") {
+      // remove the last character from the current guess
+      setCurrentGuess(currentGuess.slice(0, -1));
+    } else if (button === "{enter}") {
+      // if currentguess is 5 characters long add it to the guesses array
+      if (currentGuess.length === 5) {
+        setGuesses([...guesses, currentGuess]);
+        setCurrentGuess("");
+      }
+    } else {
+      // add the new character to the current guess
+      // if current guess is less than 5 characters long add it to the current guess
+      if (currentGuess.length < 5) {
+        setCurrentGuess(currentGuess + button);
+      }
+    }
+  }
+
+  function getGameBoard() {
+    const board = [];
+    const currentGuessRow = guesses.length;
+    // for each row
+    for (let i = 0; i < 6; i++) {
+      // for each column
+      for (let j = 0; j < 5; j++) {
+        // if the current row and column is in the guesses array
+        // return the letter
+        if (i === currentGuessRow) {
+          board.push(
+            <div className="box" key={`${i}-${j}-box`}>{`${
+              currentGuess[j] || " "
+            }`}</div>
+          );
+        } else {
+          board.push(
+            <div className="box" key={`${i}-${j}-box`}>{`${
+              guesses[i] ? guesses[i][j] ?? "" : ""
+            }`}</div>
+          );
+        }
+      }
+    }
+    return board;
   }
 
   return (
@@ -71,43 +117,7 @@ function App() {
               path="game/:gameId"
               element={
                 <>
-                  <div className="game-container">
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-                    <div className="box"></div>
-                  </div>
+                  <div className="game-container">{getGameBoard()}</div>
                   <div className="game-keyboard">
                     <Keyboard
                       keyboardRef={(r) => (keyboard.current = r)}
