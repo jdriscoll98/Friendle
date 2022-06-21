@@ -3,6 +3,12 @@ import Keyboard from "react-simple-keyboard";
 import SimpleCrypto from "simple-crypto-js";
 
 export function Game() {
+  const [guesses, setGuesses] = useState([]);
+  const [currentGuess, setCurrentGuess] = useState("");
+  const [gameOver, setGameOver] = useState(false);
+
+  const [secret] = useState("is-a-secret"); // not a really a secret but whatever
+
   const keyboard = useRef();
 
   function onKeyPress(button) {
@@ -21,7 +27,7 @@ export function Game() {
         setCurrentGuess("");
       }
       // if they're right, alert
-      if (currentGuess === getAnswer()) {
+      if (currentGuess.toUpperCase() === getAnswer().toUpperCase()) {
         alert("You got it!");
         setGameOver(true);
       }
@@ -93,12 +99,6 @@ export function Game() {
     return simpleCrypto.decrypt(encryptedWord);
   }
 
-  const [guesses, setGuesses] = useState([]);
-  const [currentGuess, setCurrentGuess] = useState("");
-  const [gameOver, setGameOver] = useState(false);
-
-  const [secret] = useState("is-a-secret"); // not a really a secret but whatever
-
   return (
     <>
       <div className="game-container">{getGameBoard()}</div>
@@ -108,14 +108,14 @@ export function Game() {
           onKeyPress={onKeyPress}
           layout={{
             default: [
-              "q w e r t y u i o p",
-              "a s d f g h j k l",
-              "{enter} z x c v b n m {bksp}",
+              "Q W E R T Y U I O P",
+              "A S D F G H J K L",
+              "{enter} Z X C V B N M {bksp}",
             ],
             shift: [
-              "q w e r t y u i o p",
-              "a s d f g h j k l",
-              "{enter} z x c v b n m {bksp}",
+              "Q W E R T Y U I O P",
+              "A S D F G H J K L",
+              "{enter} Z X C V B N M {bksp}",
             ],
           }}
         />
