@@ -75,11 +75,11 @@ export function Game() {
       return;
     }
 
-    const word = getAnswer();
+    const word = getAnswer().toUpperCase();
 
-    if (word[letterIndex] === guess[letterIndex]) {
+    if (word[letterIndex] === guess.toUpperCase()[letterIndex]) {
       return "green";
-    } else if (word.includes(guess[letterIndex])) {
+    } else if (word.includes(guess.toUpperCase()[letterIndex])) {
       return "yellow";
     } else {
       return "";
