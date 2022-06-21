@@ -24,6 +24,16 @@ html,
   text-align: center;
   line-height: 50px;
   color: white;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem;
+}
+
+.app-bar-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
 }
 
 /* App body */
@@ -49,6 +59,7 @@ html,
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 1rem;
+  color: white;
 }
 
 
@@ -98,5 +109,14 @@ html,
   color: white;
   text-align: center;
   line-height: 50px;
+  font-size: 2rem;
+  font-weight: bold;
+}
 
+.box.green {
+  background-color: green;
+}
+
+.box.yellow {
+  background-color: rgb(197, 197, 0);
 }

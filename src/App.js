@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { useState, useRef } from "react";
 import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
@@ -10,6 +10,7 @@ function App() {
   const keyboard = useRef();
   const [guesses, setGuesses] = useState([]);
   const [currentGuess, setCurrentGuess] = useState("");
+  const [gameOver, setGameOver] = useState(false);
 
   function newWordIsValid() {
     return newWordValue?.length === 5;
@@ -24,7 +25,17 @@ function App() {
     window.location.href = `/game/${newGameId}`;
   }
 
+  function getAnswer() {
+    // get game id from url
+    const gameId = window.location.pathname.split("/")[2];
+    // get word from local storage
+    return localStorage.getItem(gameId);
+  }
+
   function onKeyPress(button) {
+    if (gameOver) {
+      return;
+    }
     // get the most recent guess
     // if key is backspace
     if (button === "{bksp}") {
@@ -35,6 +46,11 @@ function App() {
       if (currentGuess.length === 5) {
         setGuesses([...guesses, currentGuess]);
         setCurrentGuess("");
+      }
+      // if they're right, alert
+      if (currentGuess === getAnswer()) {
+        alert("You got it!");
+        setGameOver(true);
       }
     } else {
       // add the new character to the current guess
@@ -52,8 +68,6 @@ function App() {
     for (let i = 0; i < 6; i++) {
       // for each column
       for (let j = 0; j < 5; j++) {
-        // if the current row and column is in the guesses array
-        // return the letter
         if (i === currentGuessRow) {
           board.push(
             <div className="box" key={`${i}-${j}-box`}>{`${
@@ -62,9 +76,10 @@ function App() {
           );
         } else {
           board.push(
-            <div className="box" key={`${i}-${j}-box`}>{`${
-              guesses[i] ? guesses[i][j] ?? "" : ""
-            }`}</div>
+            <div
+              className={`box ${getPreviousGuessStyle(guesses[i], j)}`}
+              key={`${i}-${j}-box`}
+            >{`${guesses[i] ? guesses[i][j] ?? "" : ""}`}</div>
           );
         }
       }
@@ -72,15 +87,38 @@ function App() {
     return board;
   }
 
+  function getPreviousGuessStyle(guess, letterIndex) {
+    if (!guess) {
+      return;
+    }
+
+    const word = getAnswer();
+
+    console.log(word, guess);
+
+    if (word[letterIndex] === guess[letterIndex]) {
+      return "green";
+    } else if (word.includes(guess[letterIndex])) {
+      return "yellow";
+    } else {
+      return "";
+    }
+  }
+
   return (
-    <div className="App">
-      {/* App bar */}
-      <div className="app-bar">
-        <h1>Friendle</h1>
-      </div>
-      {/* Body */}
-      <div className="app-body">
-        <BrowserRouter>
+    <BrowserRouter>
+      <div className="App">
+        {/* App bar */}
+        <div className="app-bar">
+          <h1>Friendle</h1>
+          <div className="app-bar-buttons">
+            <Link to="/">
+              <button>New Game</button>
+            </Link>
+          </div>
+        </div>
+        {/* Body */}
+        <div className="app-body">
           <Routes>
             <Route
               path="/"
@@ -140,9 +178,9 @@ function App() {
               }
             ></Route>
           </Routes>
-        </BrowserRouter>
+        </div>
       </div>
-    </div>
+    </BrowserRouter>
   );
 }
 
