@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Keyboard from "react-simple-keyboard";
 import SimpleCrypto from "simple-crypto-js";
 
@@ -7,9 +7,22 @@ export function Game() {
   const [currentGuess, setCurrentGuess] = useState("");
   const [gameOver, setGameOver] = useState(false);
 
-  const [secret] = useState("is-a-secret"); // not a really a secret but whatever
+  const [secret] = useState("is-a-secret");
 
   const keyboard = useRef();
+
+  useEffect(() => {
+    // get game id from url
+    const gameId = window.location.pathname.split("/")[2];
+    if (gameId) {
+      // get guesses from local storage
+
+      const guesses = localStorage.getItem(gameId);
+      if (guesses) {
+        setGuesses(JSON.parse(guesses));
+      }
+    }
+  }, []);
 
   function onKeyPress(button) {
     if (gameOver) {
@@ -25,6 +38,12 @@ export function Game() {
       if (currentGuess.length === 5) {
         setGuesses([...guesses, currentGuess]);
         setCurrentGuess("");
+        const gameId = window.location.pathname.split("/")[2];
+        // store guesses in localstorage
+        localStorage.setItem(
+          gameId,
+          JSON.stringify([...guesses, currentGuess])
+        );
       }
       // if they're right, alert
       if (currentGuess.toUpperCase() === getAnswer().toUpperCase()) {
