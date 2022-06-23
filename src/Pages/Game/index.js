@@ -196,7 +196,7 @@ export function Game() {
     return simpleCrypto.decrypt(encryptedWord).toUpperCase();
   }
 
-  function getKeys() {
+  function disableKeys() {
     const allKeys = [
       "Q",
       "W",
@@ -225,7 +225,7 @@ export function Game() {
       "N",
       "M",
     ];
-    const filteredKeys = allKeys.map((key) => {
+    allKeys.forEach((key) => {
       let shouldShowKey = true;
       // return false if key is in guesses but not in answer
       guesses.forEach((guess) => {
@@ -233,15 +233,14 @@ export function Game() {
           shouldShowKey = false;
         }
       });
-      return shouldShowKey ? key : "*";
+      if (!shouldShowKey) {
+        const btn = document.querySelector(`[data-skbtn="${key}"]`);
+        btn.classList.add("key-disabled");
+      }
     });
-    const rows = [];
-    for (let i = 0; i < 3; i++) {
-      rows.push(filteredKeys.slice(i * 10, i * 10 + 10).join(" "));
-    }
-    rows.push("{enter} {bksp}");
-    return rows;
   }
+
+  disableKeys();
 
   return (
     <>
@@ -251,8 +250,18 @@ export function Game() {
           keyboardRef={(r) => (keyboard.current = r)}
           onKeyPress={onKeyPress}
           layout={{
-            default: getKeys(),
-            shift: getKeys(),
+            default: [
+              "Q W E R T Y U I O P",
+              "A S D F G H J K L",
+              "Z X C V B N M",
+              "{enter} {bksp}",
+            ],
+            shift: [
+              "Q W E R T Y U I O P",
+              "A S D F G H J K L",
+              "Z X C V B N M",
+              "{enter} {bksp}",
+            ],
           }}
         />
       </div>
