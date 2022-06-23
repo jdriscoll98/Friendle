@@ -21,6 +21,13 @@ export function Game() {
       if (guesses) {
         setGuesses(JSON.parse(guesses));
       }
+      // if the last guess was correct, set game over to true
+      if (
+        guesses &&
+        JSON.parse(guesses)[JSON.parse(guesses).length - 1] === getAnswer()
+      ) {
+        setGameOver(true);
+      }
     }
   }, []);
 
@@ -68,10 +75,59 @@ export function Game() {
     }
   }
 
+  async function shareResults() {
+    const gameId = window.location.pathname.split("/")[2];
+    if (!gameId) {
+      return;
+    }
+    let text = `Friendle! ${guesses.length}/6\n${getGuessBlocks()}
+    `;
+    // copy to cliipboard
+    await navigator.clipboard.writeText(text);
+    alert("Results copied to clipboard!");
+  }
+
+  function getGuessBlocks() {
+    const results = guesses.map((guess) => {
+      const blocks = getGuessStyles(guess.toUpperCase(), getAnswer());
+      return blocks
+        .map((block) => {
+          if (block === "") {
+            // return black square emoji
+            return "⬛";
+          } else if (block === "green") {
+            // return green square emoji
+            return "🟩";
+          } else {
+            // return yellow square emoji
+            return "🟨";
+          }
+        })
+        .join("");
+    });
+
+    return results.join("\n");
+  }
+
   function getGameBoard() {
     // if route is not /game/:id, return
     if (!window.location.pathname.includes("/game/")) {
       return;
+    }
+    if (gameOver) {
+      return (
+        <div className="game-over-board">
+          <h1>Game Over</h1>
+          <p>The answer was {getAnswer()}</p>
+          <button
+            onClick={() => {
+              shareResults();
+            }}
+          >
+            Share your results!
+          </button>
+        </div>
+      );
     }
     const board = [];
     const currentGuessRow = guesses.length;
@@ -190,7 +246,7 @@ export function Game() {
   return (
     <>
       <div className="game-container">{getGameBoard()}</div>
-      <div className="game-keyboard">
+      <div className={`game-keyboard ${gameOver ? "hidden" : ""}`}>
         <Keyboard
           keyboardRef={(r) => (keyboard.current = r)}
           onKeyPress={onKeyPress}
