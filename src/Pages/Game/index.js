@@ -59,7 +59,8 @@ export function Game() {
       }
 
       // if this is the last guess, alert
-      if (guesses.length === 6) {
+      console.log(guesses.length);
+      if (guesses.length === 5) {
         alert("You lost! The answer was " + getAnswer());
         setGameOver(true);
       }
