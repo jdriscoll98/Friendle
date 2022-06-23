@@ -50,7 +50,16 @@ export function Game() {
         alert("You got it!");
         setGameOver(true);
       }
+
+      // if this is the last guess, alert
+      if (guesses.length === 6) {
+        alert("You lost! The answer was " + getAnswer());
+        setGameOver(true);
+      }
     } else {
+      if (button === "*") {
+        return;
+      }
       // add the new character to the current guess
       // if current guess is less than 5 characters long add it to the current guess
       if (currentGuess.length < 5) {
@@ -109,7 +118,7 @@ export function Game() {
 
     for (let i = 0; i < 5; i++) {
       // if letter is in word, but not in correct position, and not already in the guess return yellow
-      if (wordCopy.includes(guessCopy[i])) {
+      if (wordCopy.includes(guessCopy[i]) && !guessStyles[i]) {
         const index = wordCopy.indexOf(guessCopy[i]);
         wordCopy = wordCopy.replace(wordCopy[index], "*");
         guessStyles[i] = "yellow";
@@ -128,7 +137,54 @@ export function Game() {
     // replace '_' with '/'
     const encryptedWord = gameId.replace(/_/g, "/");
     // decrypt the word
-    return simpleCrypto.decrypt(encryptedWord);
+    return simpleCrypto.decrypt(encryptedWord).toUpperCase();
+  }
+
+  function getKeys() {
+    const allKeys = [
+      "Q",
+      "W",
+      "E",
+      "R",
+      "T",
+      "Y",
+      "U",
+      "I",
+      "O",
+      "P",
+      "A",
+      "S",
+      "D",
+      "F",
+      "G",
+      "H",
+      "J",
+      "K",
+      "L",
+      "Z",
+      "X",
+      "C",
+      "V",
+      "B",
+      "N",
+      "M",
+    ];
+    const filteredKeys = allKeys.map((key) => {
+      let shouldShowKey = true;
+      // return false if key is in guesses but not in answer
+      guesses.forEach((guess) => {
+        if (guess.includes(key) && !getAnswer().includes(key)) {
+          shouldShowKey = false;
+        }
+      });
+      return shouldShowKey ? key : "*";
+    });
+    const rows = [];
+    for (let i = 0; i < 3; i++) {
+      rows.push(filteredKeys.slice(i * 10, i * 10 + 10).join(" "));
+    }
+    rows.push("{enter} {bksp}");
+    return rows;
   }
 
   return (
@@ -139,16 +195,8 @@ export function Game() {
           keyboardRef={(r) => (keyboard.current = r)}
           onKeyPress={onKeyPress}
           layout={{
-            default: [
-              "Q W E R T Y U I O P",
-              "A S D F G H J K L",
-              "{enter} Z X C V B N M {bksp}",
-            ],
-            shift: [
-              "Q W E R T Y U I O P",
-              "A S D F G H J K L",
-              "{enter} Z X C V B N M {bksp}",
-            ],
+            default: getKeys(),
+            shift: getKeys(),
           }}
         />
       </div>
