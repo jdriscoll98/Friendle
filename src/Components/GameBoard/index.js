@@ -66,10 +66,18 @@ export function GameBoard(props) {
       return;
     }
     if (props.gameOver) {
+      const answer = props.getAnswer();
+      const definition = props.getDefinition(answer);
       return (
         <div className="game-over-board">
           <h1>Game Over</h1>
-          <p>The answer was {props.getAnswer()}</p>
+          <p>The answer was {answer}</p>
+          {definition && (
+            <p>
+              {answer}: {definition.slice(0, 150)}...
+            </p>
+          )}
+
           <button
             onClick={() => {
               shareResults();

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SimpleCrypto from "simple-crypto-js";
-import wordBank from "../../WordBank/wordbank";
+import wordbank from "../../WordBank/wordbank";
 export function Create() {
   const [secret] = useState("is-a-secret"); // not a really a secret but whatever
 
@@ -56,7 +56,9 @@ export function Create() {
           e.preventDefault();
           // pick a random word from the wordbank
           const randomWord =
-            wordBank[Math.floor(Math.random() * wordBank.length)];
+            Object.keys(wordbank)[
+              Math.floor(Math.random() * Object.keys(wordbank).length)
+            ];
           // encrypt the word
           createNewGame(randomWord);
         }}

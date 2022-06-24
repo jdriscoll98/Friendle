@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { GameBoard, GameKeyboard } from "../../Components";
 import SimpleCrypto from "simple-crypto-js";
+import wordbank from "../../WordBank/wordbank";
 export function Game() {
   const [guesses, setGuesses] = useState([]);
   const [currentGuess, setCurrentGuess] = useState("");
@@ -22,11 +23,20 @@ export function Game() {
     return simpleCrypto.decrypt(encryptedWord).toUpperCase();
   }
 
+  function getDefinition(word) {
+    if (!word) {
+      return;
+    }
+    return wordbank[word.toLowerCase()];
+  }
+
   useEffect(() => {
     const checkForWinner = (guesses) => {
       if (
-        guesses &&
-        JSON.parse(guesses)[JSON.parse(guesses).length - 1] === getAnswer()
+        (guesses &&
+          JSON.parse(guesses)[JSON.parse(guesses).length - 1] ===
+            getAnswer()) ||
+        (guesses && JSON.parse(guesses).length === 6)
       ) {
         setGameOver(true);
       }
@@ -61,7 +71,15 @@ export function Game() {
     } else if (button === "{enter}") {
       // if currentguess is 5 characters long add it to the guesses array
       if (currentGuess.length === 5) {
-        console.log("in here");
+        // if guess is not in wordbank or isnt the answer, alert
+        if (
+          !wordbank[currentGuess.toLowerCase()] &&
+          currentGuess !== getAnswer()
+        ) {
+          alert("That's not in the word list!");
+          setCurrentGuess("");
+          return;
+        }
         setGuesses([...guesses, currentGuess]);
         setCurrentGuess("");
         const gameId = window.location.pathname.split("/")[2];
@@ -75,12 +93,14 @@ export function Game() {
       if (currentGuess.toUpperCase() === getAnswer().toUpperCase()) {
         alert("You got it!");
         setGameOver(true);
+        return;
       }
 
       // if this is the last guess, alert
       if (currentGuess.length === 5 && guesses.length === 5) {
         alert("You lost! The answer was " + getAnswer());
         setGameOver(true);
+        return;
       }
     } else {
       if (button === "*") {
@@ -101,6 +121,7 @@ export function Game() {
         currentGuess={currentGuess}
         gameOver={gameOver}
         getAnswer={getAnswer}
+        getDefinition={getDefinition}
       />
       <GameKeyboard
         guesses={guesses}
