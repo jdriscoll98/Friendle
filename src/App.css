@@ -36,6 +36,14 @@ html,
   justify-content: space-between;
   align-items: center;
   height: 100%;
+
+}
+
+.app-bar-btn {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+  padding: 10px;
 }
 
 /* App body */
