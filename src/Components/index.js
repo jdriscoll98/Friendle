@@ -1,3 +1,4 @@
 import { Appbar } from "./Appbar";
-
-export { Appbar };
+import { GameBoard } from "./GameBoard";
+import { GameKeyboard } from "./GameKeyboard";
+export { Appbar, GameBoard, GameKeyboard };
