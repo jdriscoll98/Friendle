@@ -72,14 +72,6 @@ export function Game() {
       // if currentguess is 5 characters long add it to the guesses array
       if (currentGuess.length === 5) {
         // if guess is not in wordbank or isnt the answer, alert
-        if (
-          !wordbank[currentGuess.toLowerCase()] &&
-          currentGuess !== getAnswer()
-        ) {
-          alert("That's not in the word list!");
-          setCurrentGuess("");
-          return;
-        }
         setGuesses([...guesses, currentGuess]);
         setCurrentGuess("");
         const gameId = window.location.pathname.split("/")[2];
